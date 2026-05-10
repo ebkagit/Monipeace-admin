@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monipeace Escrow Admin</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; padding: 10px; margin: 0; }
+        .container { max-width: 100%; margin: 0 auto; }
+        h1 { color: #38bdf8; text-align: center; margin: 10px 0; }
+        .login, .dashboard { background: #1e293b; padding: 20px; border-radius: 8px; margin-top: 20px; }
+        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: none; box-sizing: border-box; font-size: 16px; }
+        input { background: #334155; color: #fff; }
+        button { background: #38bdf8; color: #0f172a; font-weight: bold; cursor: pointer; }
+        .btn-confirm { background: #22c55e; }
+        .btn-release { background: #f59e0b; }
+        .btn-refund { background: #ef4444; }
+        .btn-logout { background:#64748b; margin-bottom: 15px; }
+        .status { padding: 4px 8px; border-radius: 4px; font-size: 10px; }
+        .awaiting_payment { background: #f59e0b; color: #000; }
+        .payment_confirmed { background: #22c55e; color: #000; }
+        .completed { background: #38bdf8; color: #000; }
+        .refunded { background: #64748b; color: #fff; }
+        .hidden { display: none; }
+        .card { background: #334155; padding: 12px; margin: 12px 0; border-radius: 6px; line-height: 1.6; }
+        .card b { color: #38bdf8; font-size: 16px; }
+        small { color: #cbd5e1; display: block; }
+        .actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .actions button { width: auto; flex: 1; padding: 10px; margin: 0; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Monipeace Escrow</h1>
+        
+        <div id="login" class="login">
+            <h3>Admin Login</h3>
+            <input type="email" id="email" placeholder="starboyebuka2000@gmail.com" value="starboyebuka2000@gmail.com">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()">Login</button>
+        </div>
+
+        <div id="dashboard" class="dashboard hidden">
+            <button class="btn-logout" onclick="logout()">Logout</button>
+            <h3>All Transactions</h3>
+            <button onclick="loadTransactions()">Refresh Transactions</button>
+            <div id="transactions"></div>
+        </div>
+    </div>
+
+<script>
+    // PASTE YOUR SUPABASE DETAILS HERE - REPLACE THESE 2 LINES ONLY
+    const SUPABASE_URL = 'https://fsxtqqhlthzsdwtvyvwz.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzeHRxcWhsdGh6c2R3dHZ5dnd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0MTY0OTQsImV4cCI6MjA5Mzk5MjQ5NH0.KqMx0LRS0f_q6RHL_ukVs4B8Pe7ju2QsTJ7h_KP7L6o';
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function login() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) return
